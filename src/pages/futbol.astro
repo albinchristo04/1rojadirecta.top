@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import MatchList from '../components/MatchList.astro';
+import FaqBlock from '../components/FaqBlock.astro';
+import { fetchMatches, getMatchesForSport } from '../lib/data';
+import { sportTitle, sportMeta, hubFaqSchema, itemListSchema } from '../lib/seo';
+import { hubFaqText } from '../lib/faq';
+
+const matches = await fetchMatches();
+const sport = 'futbol';
+const label = 'Fútbol';
+const sportMatches = getMatchesForSport(matches, sport);
+
+const title = `Fútbol En Vivo Hoy - Ver Fútbol Gratis Sin Registro | 1RojaDirecta`;
+const description = sportMeta(label, sportMatches.length);
+const schema = [hubFaqSchema(label, sportMatches), itemListSchema(sportMatches, `Partidos de ${label} en Vivo`)];
+const faqItems = hubFaqText(label, sportMatches);
+---
+<Base title={title} description={description} schema={schema}>
+  <div class="container section">
+    <div style="margin-bottom:1.5rem;">
+      <span class="badge badge--sport">Fútbol</span>
+      <h1 style="margin-top:0.5rem;">Fútbol En Vivo Hoy <span style="color:var(--text-muted);font-weight:400;font-size:0.7em;">({sportMatches.length} partidos)</span></h1>
+      <p class="seo-text" style="margin-top:0.5rem;">
+        Ver fútbol en vivo gratis hoy. La Liga, Champions League, Liga MX, Copa Libertadores y más.
+        Hoy hay <strong>{sportMatches.length} partidos</strong> en directo. Múltiples canales sin registro.
+      </p>
+    </div>
+
+    {sportMatches.length > 0
+      ? <MatchList matches={sportMatches} />
+      : <p class="text-muted text-center" style="padding:3rem 0;">No hay partidos de fútbol disponibles ahora. Vuelve pronto.</p>
+    }
+
+    <FaqBlock items={faqItems} />
+  </div>
+</Base>

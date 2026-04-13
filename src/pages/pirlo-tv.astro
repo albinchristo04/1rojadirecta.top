@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+import MatchList from '../components/MatchList.astro';
+import FaqBlock from '../components/FaqBlock.astro';
+import { fetchMatches } from '../lib/data';
+import { brandMeta, hubFaqSchema } from '../lib/seo';
+import { brandFaqText } from '../lib/faq';
+
+const matches = await fetchMatches();
+const brand = 'Pirlo TV';
+const title = `Pirlo TV En Vivo - Fútbol y Deportes en Directo | 1RojaDirecta`;
+const description = brandMeta(brand, matches.length);
+const schema = [hubFaqSchema(brand, matches)];
+const faqItems = brandFaqText(brand, matches.length);
+---
+<Base title={title} description={description} schema={schema}>
+  <div class="container section">
+    <div style="margin-bottom:1.5rem;">
+      <span class="badge badge--live">Pirlo TV</span>
+      <h1 style="margin-top:0.5rem;">Pirlo TV — Fútbol y Deportes en Vivo</h1>
+      <p class="seo-text" style="margin-top:0.5rem;">
+        <strong>Pirlo TV</strong> — retransmisiones deportivas en vivo gratis.
+        Fútbol, béisbol MLB, baloncesto NBA, hockey NHL y más.
+        También conocido como <em>PirloTV</em>, <em>Pirlo TV en vivo</em>, <em>Pirlo TV fútbol en vivo</em>.
+        <strong>{matches.length} partidos disponibles hoy</strong> con múltiples canales y 4 servidores.
+      </p>
+      <p class="seo-text">
+        Ver también en <a href="/tarjeta-roja/" style="color:var(--accent-text);">Tarjeta Roja TV</a> y
+        <a href="/roja-directa-pirlo-tv/" style="color:var(--accent-text);">Roja Directa Pirlo TV</a>.
+      </p>
+    </div>
+
+    <MatchList matches={matches} />
+    <FaqBlock items={faqItems} />
+  </div>
+</Base>

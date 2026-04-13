@@ -1,0 +1,30 @@
+---
+import { getTimezoneRow } from '../lib/timezones';
+
+interface Props { utcTime: string; }
+const { utcTime } = Astro.props;
+
+// Parse individual timezone entries for styled display
+const entries = [
+  { label: 'Madrid',        offsetMin: 120  },
+  { label: 'CDMX',         offsetMin: -300 },
+  { label: 'Bogotá',       offsetMin: -300 },
+  { label: 'Bs. Aires',    offsetMin: -180 },
+  { label: 'ET',           offsetMin: -240 },
+];
+
+function calcTime(utc: string, offset: number): string {
+  const t = utc.includes('T') ? utc.split('T')[1].slice(0,5) : utc.slice(0,5);
+  const [h, m] = t.split(':').map(Number);
+  const mins = ((h * 60 + m + offset) % 1440 + 1440) % 1440;
+  return `${String(Math.floor(mins/60)).padStart(2,'0')}:${String(mins%60).padStart(2,'0')}`;
+}
+---
+<div class="tz-row" aria-label="Horario en diferentes zonas horarias">
+  {entries.map(e => (
+    <div class="tz-item">
+      <span class="tz-item__time">{calcTime(utcTime, e.offsetMin)}</span>
+      <span class="tz-item__label">{e.label}</span>
+    </div>
+  ))}
+</div>

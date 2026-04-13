@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+import MatchList from '../components/MatchList.astro';
+import FaqBlock from '../components/FaqBlock.astro';
+import { fetchMatches } from '../lib/data';
+import { brandTitle, brandMeta, hubFaqSchema } from '../lib/seo';
+import { brandFaqText } from '../lib/faq';
+
+const matches = await fetchMatches();
+const brand = 'Tarjeta Roja TV';
+const title = `Tarjeta Roja TV En Vivo - Ver Partidos Gratis | 1RojaDirecta`;
+const description = brandMeta(brand, matches.length);
+const schema = [hubFaqSchema(brand, matches)];
+const faqItems = brandFaqText(brand, matches.length);
+---
+<Base title={title} description={description} schema={schema}>
+  <div class="container section">
+    <div style="margin-bottom:1.5rem;">
+      <span class="badge badge--live">Tarjeta Roja TV</span>
+      <h1 style="margin-top:0.5rem;">Tarjeta Roja TV En Vivo — Ver Partidos Gratis</h1>
+      <p class="seo-text" style="margin-top:0.5rem;">
+        <strong>Tarjeta Roja TV</strong> es otro nombre para acceder a los mismos partidos en vivo.
+        Aquí puedes ver todos los deportes disponibles hoy: fútbol, béisbol MLB, baloncesto NBA, hockey NHL.
+        También disponible como <em>Tarjeta Roja en vivo</em>, <em>Tarjeta Roja directa</em>.
+        <strong>{matches.length} partidos disponibles hoy</strong> sin registro.
+      </p>
+      <p class="seo-text">
+        Ver también en <a href="/pirlo-tv/" style="color:var(--accent-text);">Pirlo TV</a> y
+        <a href="/roja-directa-pirlo-tv/" style="color:var(--accent-text);">Roja Directa Pirlo TV</a>.
+      </p>
+    </div>
+
+    <MatchList matches={matches} />
+    <FaqBlock items={faqItems} />
+  </div>
+</Base>

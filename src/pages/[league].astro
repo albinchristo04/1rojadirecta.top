@@ -1,0 +1,85 @@
+---
+import Base from '../layouts/Base.astro';
+import MatchList from '../components/MatchList.astro';
+import FaqBlock from '../components/FaqBlock.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import { fetchMatches, getMatchesForLeague } from '../lib/data';
+import { leagueTitle, leagueMeta, hubFaqSchema, itemListSchema, breadcrumbSchema } from '../lib/seo';
+import { hubFaqText } from '../lib/faq';
+import { LEAGUE_MAP, SITE_URL } from '../lib/config';
+
+export async function getStaticPaths() {
+  const { fetchMatches: fm } = await import('../lib/data');
+  const matches = await fm();
+
+  // Build unique league slugs from data
+  const slugSet = new Set<string>();
+  const pathData: { params: { league: string }; props: any }[] = [];
+
+  for (const m of matches) {
+    if (!slugSet.has(m.leagueSlug)) {
+      slugSet.add(m.leagueSlug);
+    }
+  }
+
+  for (const leagueSlug of slugSet) {
+    const leagueMatches = matches.filter(m => m.leagueSlug === leagueSlug);
+    const first = leagueMatches[0];
+    pathData.push({
+      params: { league: leagueSlug },
+      props: {
+        leagueSlug,
+        leagueLabel: first.leagueLabel,
+        sport: first.sport,
+        matches: leagueMatches,
+      },
+    });
+  }
+
+  return pathData;
+}
+
+const { leagueSlug, leagueLabel, sport, matches } = Astro.props;
+
+const title = leagueTitle(leagueLabel);
+const description = leagueMeta(leagueLabel, matches.length);
+const canonical = `${SITE_URL}/${leagueSlug}/`;
+
+const sportLabel = sport === 'futbol' ? 'Fútbol' : sport === 'mlb' ? 'Béisbol' : sport.toUpperCase();
+const sportHref = sport === 'futbol' ? '/futbol/' : `/${sport}/`;
+
+const breadcrumbs = [
+  { name: 'Inicio', href: '/' },
+  { name: sportLabel, href: sportHref },
+  { name: leagueLabel, href: canonical },
+];
+
+const schema = [
+  hubFaqSchema(leagueLabel, matches),
+  itemListSchema(matches, `Partidos de ${leagueLabel} en Vivo`),
+  breadcrumbSchema(breadcrumbs),
+];
+
+const faqItems = hubFaqText(leagueLabel, matches);
+---
+<Base title={title} description={description} canonical={canonical} schema={schema}>
+  <div class="container">
+    <Breadcrumb items={breadcrumbs} />
+
+    <div style="margin-bottom:1.5rem; padding-top:0.5rem;">
+      <span class="badge badge--sport">{sportLabel}</span>
+      <h1 style="margin-top:0.5rem;">{leagueLabel} En Vivo <span style="color:var(--text-muted);font-weight:400;font-size:0.7em;">({matches.length} partidos)</span></h1>
+      <p class="seo-text" style="margin-top:0.5rem;">
+        Ver {leagueLabel} en vivo gratis. {matches.length} partidos disponibles hoy en directo.
+        Múltiples canales en español, inglés y portugués. Sin registro, sin cable.
+      </p>
+    </div>
+
+    {matches.length > 0
+      ? <MatchList matches={matches} groupByLeague={false} />
+      : <p class="text-muted text-center" style="padding:3rem 0;">No hay partidos disponibles ahora.</p>
+    }
+
+    <FaqBlock items={faqItems} />
+  </div>
+</Base>

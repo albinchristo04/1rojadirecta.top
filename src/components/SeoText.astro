@@ -1,0 +1,8 @@
+---
+interface Props {
+  text: string;
+  class?: string;
+}
+const { text, class: cls = '' } = Astro.props;
+---
+<p class={`seo-text ${cls}`} set:html={text} />

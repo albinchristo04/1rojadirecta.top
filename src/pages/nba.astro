@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import MatchList from '../components/MatchList.astro';
+import FaqBlock from '../components/FaqBlock.astro';
+import { fetchMatches, getMatchesForSport } from '../lib/data';
+import { hubFaqSchema } from '../lib/seo';
+import { hubFaqText } from '../lib/faq';
+
+const matches = await fetchMatches();
+const sportMatches = getMatchesForSport(matches, 'nba');
+
+const title = `NBA En Vivo Gratis Hoy - Roja Directa NBA | 1RojaDirecta`;
+const description = `Ver NBA en vivo gratis. ${sportMatches.length} partidos de baloncesto disponibles hoy. Sin registro, sin cable.`;
+const faqItems = hubFaqText('NBA', sportMatches);
+---
+<Base title={title} description={description} schema={[hubFaqSchema('NBA', sportMatches)]}>
+  <div class="container section">
+    <h1>NBA En Vivo Hoy <span style="color:var(--text-muted);font-weight:400;font-size:0.7em;">({sportMatches.length} partidos)</span></h1>
+    <p class="seo-text">Ver NBA en vivo gratis. Baloncesto en directo — Warriors, Lakers, Celtics y todos los equipos. Sin registro.</p>
+    {sportMatches.length > 0 ? <MatchList matches={sportMatches} /> : <p class="text-muted text-center" style="padding:3rem 0;">No hay partidos NBA disponibles ahora.</p>}
+    <FaqBlock items={faqItems} />
+  </div>
+</Base>

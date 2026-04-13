@@ -1,0 +1,19 @@
+---
+interface Props {
+  items: { q: string; a: string }[];
+  headingLevel?: 'h2' | 'h3';
+}
+const { items, headingLevel = 'h2' } = Astro.props;
+const H = headingLevel;
+---
+<section class="faq" aria-labelledby="faq-heading">
+  <H id="faq-heading" class="faq__title">Preguntas Frecuentes</H>
+  <dl>
+    {items.map((item, i) => (
+      <div class="faq__item" key={i}>
+        <dt class="faq__question">{item.q}</dt>
+        <dd class="faq__answer">{item.a}</dd>
+      </div>
+    ))}
+  </dl>
+</section>

@@ -1,0 +1,57 @@
+---
+import Base from '../layouts/Base.astro';
+import { organizationSchema, jsonLd } from '../lib/seo';
+
+const schema = [{
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'Sobre 1RojaDirecta',
+  url: 'https://1rojadirecta.top/sobre-nosotros/',
+  description: '1RojaDirecta es un directorio de retransmisiones deportivas en vivo.',
+  publisher: {
+    '@type': 'Organization',
+    name: '1RojaDirecta',
+    url: 'https://1rojadirecta.top',
+  },
+}];
+---
+<Base
+  title="Sobre 1RojaDirecta — Qué Es y Cómo Funciona | 1RojaDirecta"
+  description="1RojaDirecta es un directorio de enlaces a retransmisiones deportivas en vivo. Descubre cómo funciona Roja Directa, Tarjeta Roja TV y Pirlo TV."
+  canonical="https://1rojadirecta.top/sobre-nosotros/"
+  schema={schema}
+>
+  <div class="container section" style="max-width:740px;">
+    <h1>Sobre 1RojaDirecta</h1>
+
+    <p class="seo-text" style="margin-top:1rem;">
+      <strong>1RojaDirecta</strong> (también conocido como <em>1 Roja Directa</em>, <em>Roja Directa</em>,
+      <em>Tarjeta Roja TV</em> y <em>Pirlo TV</em>) es un directorio de retransmisiones deportivas en vivo disponibles en internet.
+    </p>
+
+    <h2 style="margin-top:1.5rem;">¿Qué es 1RojaDirecta?</h2>
+    <p class="seo-text">
+      1RojaDirecta es un sitio web que agrega enlaces de retransmisión de eventos deportivos en vivo.
+      Ofrecemos acceso a fútbol, béisbol MLB, baloncesto NBA, hockey NHL, MotoGP y más deportes en directo gratis.
+    </p>
+
+    <h2 style="margin-top:1.5rem;">¿Cómo funciona?</h2>
+    <p class="seo-text">
+      Nuestra plataforma se actualiza automáticamente cada 3 horas con los eventos deportivos disponibles.
+      Para ver un partido, selecciona el evento, elige un canal y un servidor. Sin registro, sin pago, sin descargas.
+    </p>
+
+    <h2 style="margin-top:1.5rem;">¿Cuál es la diferencia entre Roja Directa, Tarjeta Roja TV y Pirlo TV?</h2>
+    <p class="seo-text">
+      Roja Directa, Tarjeta Roja TV y Pirlo TV son nombres populares que los usuarios utilizan para buscar
+      retransmisiones deportivas en español. En 1rojadirecta.top, todos están disponibles en un solo lugar.
+    </p>
+
+    <h2 style="margin-top:1.5rem;">Aviso Legal</h2>
+    <p class="seo-text">
+      1RojaDirecta no almacena ni distribuye contenido audiovisual propio. Es un directorio de enlaces
+      a contenido disponible públicamente en internet. El usuario es responsable de verificar la legislación
+      vigente en su país con respecto al consumo de contenido en línea.
+    </p>
+  </div>
+</Base>

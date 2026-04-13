@@ -1,0 +1,92 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, SITE_TAGLINE } from '../lib/config';
+import { websiteSchema, organizationSchema, jsonLd } from '../lib/seo';
+
+interface Props {
+  title: string;
+  description?: string;
+  canonical?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  noindex?: boolean;
+  schema?: object[];
+}
+
+const {
+  title,
+  description = SITE_DESCRIPTION,
+  canonical,
+  ogTitle,
+  ogDescription,
+  noindex = false,
+  schema = [],
+} = Astro.props;
+
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, SITE_URL).href;
+const ogT = ogTitle ?? title;
+const ogD = ogDescription ?? description;
+
+const allSchema = [websiteSchema(), organizationSchema(), ...schema];
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+  <!-- Primary SEO -->
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <meta name="keywords" content="roja directa, tarjeta roja tv, pirlo tv, futbol en vivo, ver futbol gratis, mlb en vivo, nba en vivo, nhl en vivo, deportes en vivo" />
+  <link rel="canonical" href={canonicalUrl} />
+  {noindex && <meta name="robots" content="noindex, nofollow" />}
+  {!noindex && <meta name="robots" content="index, follow, max-image-preview:large" />}
+
+  <!-- hreflang -->
+  <link rel="alternate" hreflang="es" href={canonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content={SITE_NAME} />
+  <meta property="og:title" content={ogT} />
+  <meta property="og:description" content={ogD} />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:image" content={`${SITE_URL}/og-default.png`} />
+  <meta property="og:locale" content="es_ES" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={ogT} />
+  <meta name="twitter:description" content={ogD} />
+  <meta name="twitter:image" content={`${SITE_URL}/og-default.png`} />
+
+  <!-- PWA / Theme -->
+  <meta name="theme-color" content="#e63946" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title="Partidos en Vivo" href="/feed.xml" />
+
+  <!-- Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="https://bolaloca.my" />
+  <link rel="dns-prefetch" href="https://bolaloca.my" />
+
+  <!-- JSON-LD Schemas -->
+  {allSchema.map(s => <Fragment set:html={jsonLd(s)} />)}
+</head>
+<body>
+  <Nav />
+  <main id="main-content">
+    <slot />
+  </main>
+  <Footer />
+</body>
+</html>

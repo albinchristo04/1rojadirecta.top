@@ -1,0 +1,59 @@
+---
+import Base from '../layouts/Base.astro';
+import MatchList from '../components/MatchList.astro';
+import { fetchMatches } from '../lib/data';
+import { homeTitle, homeMeta, itemListSchema, jsonLd } from '../lib/seo';
+
+const matches = await fetchMatches();
+const today = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+const todayCapitalized = today.charAt(0).toUpperCase() + today.slice(1);
+
+const title = homeTitle();
+const description = homeMeta();
+const schema = [itemListSchema(matches, 'Partidos en Vivo Hoy')];
+
+const buildTime = new Date().toISOString();
+---
+<Base title={title} description={description} schema={schema}>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero__tag">
+        EN VIVO · {matches.length} Partidos
+      </div>
+      <h1 class="hero__title">Partidos en Vivo Hoy — {todayCapitalized}</h1>
+      <p class="hero__subtitle">
+        Ver deportes en vivo gratis. Sin registro, sin pago. Múltiples canales y servidores.
+      </p>
+      <div class="hero__brands">
+        <a href="/tarjeta-roja/" class="brand-pill" id="hero-tarjeta-roja">Tarjeta Roja TV</a>
+        <a href="/pirlo-tv/" class="brand-pill" id="hero-pirlo-tv">Pirlo TV</a>
+        <a href="/roja-directa-pirlo-tv/" class="brand-pill" id="hero-roja-pirlo">Roja Directa Pirlo TV</a>
+      </div>
+      <p class="hero__meta">Actualizado: {buildTime.replace('T', ' ').slice(0, 16)} UTC · Recarga automática cada 3h</p>
+    </div>
+  </section>
+
+  <!-- Match Listings -->
+  <div class="container section">
+    {matches.length === 0 ? (
+      <div class="text-center" style="padding: 4rem 0; color: var(--text-muted);">
+        <p style="font-size:1.5rem; margin-bottom:0.5rem;">📡</p>
+        <p>No hay partidos disponibles en este momento. Vuelve pronto.</p>
+      </div>
+    ) : (
+      <MatchList matches={matches} />
+    )}
+  </div>
+
+  <!-- SEO Text Block -->
+  <div class="container">
+    <p class="seo-text">
+      Bienvenido a <strong>1RojaDirecta</strong> — tu destino para ver deportes en vivo gratis.
+      Somos el hogar de <strong>Roja Directa</strong>, <strong>Tarjeta Roja TV</strong> y <strong>Pirlo TV</strong> en un solo lugar.
+      Hoy hay <strong>{matches.length} partidos disponibles</strong> en directo: fútbol, béisbol MLB, baloncesto NBA, hockey NHL y más.
+      Sin registro, sin cable, sin pago. Disponible en español, inglés, francés, italiano y portugués.
+      Actualizado automáticamente cada 3 horas. También conocido como <em>Roja Dirécta</em>, <em>1 Roja Directa</em>.
+    </p>
+  </div>
+</Base>

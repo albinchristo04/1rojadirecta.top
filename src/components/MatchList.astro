@@ -1,0 +1,41 @@
+---
+import type { Match } from '../lib/types';
+import MatchCard from './MatchCard.astro';
+import { SPORT_LABELS } from '../lib/config';
+
+interface Props {
+  matches: Match[];
+  groupByLeague?: boolean;
+}
+
+const { matches, groupByLeague = true } = Astro.props;
+
+// Group matches by league slug
+const groups: Record<string, { label: string; sport: string; matches: Match[] }> = {};
+
+if (groupByLeague) {
+  for (const m of matches) {
+    if (!groups[m.leagueSlug]) {
+      groups[m.leagueSlug] = { label: m.leagueLabel, sport: m.sport, matches: [] };
+    }
+    groups[m.leagueSlug].matches.push(m);
+  }
+} else {
+  groups['all'] = { label: 'Todos', sport: 'all', matches };
+}
+---
+{Object.entries(groups).map(([key, group]) => (
+  <section class="league-group">
+    <div class="league-group__header">
+      <h2 class="league-group__title" id={`league-${key}`}>
+        <a href={`/${group.sport === 'futbol' ? '' : ''}${group.sport === 'mlb' || group.sport === 'nba' || group.sport === 'nhl' || group.sport === 'motogp' ? `${group.sport}/` : `/${key}/`}`} style="color:inherit">
+          {group.label}
+        </a>
+      </h2>
+      <span class="league-group__count">{group.matches.length} partido{group.matches.length !== 1 ? 's' : ''}</span>
+    </div>
+    <div class="match-grid">
+      {group.matches.map(m => <MatchCard match={m} />)}
+    </div>
+  </section>
+))}

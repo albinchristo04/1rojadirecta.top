@@ -1,0 +1,62 @@
+---
+import Base from '../../layouts/Base.astro';
+import MatchList from '../../components/MatchList.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { fetchMatches } from '../../lib/data';
+import { toSlug } from '../../lib/slugs';
+import { SITE_URL } from '../../lib/config';
+
+export async function getStaticPaths() {
+  const { fetchMatches: fm } = await import('../../lib/data');
+  const matches = await fm();
+
+  // Collect unique teams
+  const teams = new Map<string, { name: string; sport: string }>();
+  for (const m of matches) {
+    const s1 = toSlug(m.team1);
+    const s2 = toSlug(m.team2);
+    if (!teams.has(s1)) teams.set(s1, { name: m.team1, sport: m.sport });
+    if (!teams.has(s2)) teams.set(s2, { name: m.team2, sport: m.sport });
+  }
+
+  return Array.from(teams.entries()).map(([slug, info]) => ({
+    params: { slug },
+    props: {
+      teamSlug: slug,
+      teamName: info.name,
+      sport: info.sport,
+      matches: matches.filter(m => toSlug(m.team1) === slug || toSlug(m.team2) === slug),
+    },
+  }));
+}
+
+const { teamSlug, teamName, sport, matches } = Astro.props;
+const canonical = `${SITE_URL}/equipo/${teamSlug}/`;
+const title = `${teamName} En Vivo - Próximos Partidos · Roja Directa | 1RojaDirecta`;
+const description = `Ver ${teamName} en vivo gratis. ${matches.length} partido${matches.length !== 1 ? 's' : ''} disponible${matches.length !== 1 ? 's' : ''}. Roja Directa ${teamName} sin registro.`;
+
+const sportLabel = sport === 'futbol' ? 'Fútbol' : sport === 'mlb' ? 'MLB' : sport.toUpperCase();
+const sportHref = sport === 'futbol' ? '/futbol/' : `/${sport}/`;
+
+const breadcrumbs = [
+  { name: 'Inicio', href: '/' },
+  { name: sportLabel, href: sportHref },
+  { name: teamName, href: canonical },
+];
+---
+<Base title={title} description={description} canonical={canonical}>
+  <div class="container">
+    <Breadcrumb items={breadcrumbs} />
+    <div style="padding: 1rem 0 1rem;">
+      <span class="badge badge--sport">{sportLabel}</span>
+      <h1 style="margin-top:0.5rem;">{teamName} En Vivo <span style="color:var(--text-muted);font-weight:400;font-size:0.7em;">({matches.length} partidos)</span></h1>
+      <p class="seo-text" style="margin-top:0.5rem;">
+        Ver {teamName} en vivo gratis. Roja Directa {teamName} — todos los partidos en directo sin registro.
+      </p>
+    </div>
+    {matches.length > 0
+      ? <MatchList matches={matches} groupByLeague={false} />
+      : <p class="text-muted text-center" style="padding:3rem 0;">No hay partidos disponibles para {teamName} ahora.</p>
+    }
+  </div>
+</Base>

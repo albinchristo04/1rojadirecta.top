@@ -1,0 +1,38 @@
+---
+import Base from '../layouts/Base.astro';
+import { fetchMatches } from '../lib/data';
+
+const matches = await fetchMatches();
+---
+<Base title="Partido No Disponible — 1RojaDirecta" noindex={true}>
+  <div class="container section" style="text-align:center; padding: 4rem 1rem;">
+    <p style="font-size:3rem; margin-bottom:1rem;">📺</p>
+    <h1 style="font-size:1.5rem;">Este partido ya terminó</h1>
+    <p style="color:var(--text-secondary); margin: 0.5rem 0 2rem;">
+      Pero hay más partidos en vivo ahora mismo.
+    </p>
+
+    <div style="display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap; margin-bottom:2rem;">
+      <a href="/" class="match-card__cta" id="404-home">Ver Todos los Partidos</a>
+      <a href="/futbol/" class="match-card__cta" style="background:var(--bg-elevated); color:var(--text-primary);" id="404-futbol">Fútbol</a>
+      <a href="/mlb/" class="match-card__cta" style="background:var(--bg-elevated); color:var(--text-primary);" id="404-mlb">MLB</a>
+      <a href="/nba/" class="match-card__cta" style="background:var(--bg-elevated); color:var(--text-primary);" id="404-nba">NBA</a>
+      <a href="/nhl/" class="match-card__cta" style="background:var(--bg-elevated); color:var(--text-primary);" id="404-nhl">NHL</a>
+    </div>
+
+    {matches.length > 0 && (
+      <div style="max-width:600px; margin:0 auto; text-align:left;">
+        <p style="color:var(--text-muted); font-size:0.78rem; margin-bottom:0.75rem; text-transform:uppercase; letter-spacing:0.07em;">Partidos Disponibles Ahora</p>
+        <div class="more-matches__list">
+          {matches.slice(0, 6).map(m => (
+            <a href={`/partido/${m.slug}/`} class="more-matches__item" id={`404-match-${m.slug}`}>
+              <span class="more-matches__item-time">{m.time} UTC</span>
+              <span class="more-matches__item-teams">{m.team1} vs {m.team2}</span>
+              <span class="text-muted" style="font-size:0.72rem; margin-left:auto;">{m.leagueLabel}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</Base>

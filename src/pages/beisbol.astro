@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import MatchList from '../components/MatchList.astro';
+import FaqBlock from '../components/FaqBlock.astro';
+import { fetchMatches, getMatchesForSport } from '../lib/data';
+import { hubFaqSchema, itemListSchema } from '../lib/seo';
+import { hubFaqText } from '../lib/faq';
+
+const matches = await fetchMatches();
+const sportMatches = getMatchesForSport(matches, 'mlb');
+
+const title = `Béisbol En Vivo Hoy - Roja Directa Béisbol | 1RojaDirecta`;
+const description = `Ver béisbol en vivo gratis. ${sportMatches.length} partidos disponibles hoy en directo. MLB en español, sin registro.`;
+const faqItems = hubFaqText('Béisbol', sportMatches);
+---
+<Base title={title} description={description} schema={[hubFaqSchema('Béisbol', sportMatches)]}>
+  <div class="container section">
+    <h1>Béisbol En Vivo Hoy <span style="color:var(--text-muted);font-weight:400;font-size:0.7em;">({sportMatches.length} partidos)</span></h1>
+    <p class="seo-text">Ver béisbol MLB en vivo hoy gratis. Todos los partidos de la Major League Baseball en directo. Sin registro, sin cable.</p>
+    {sportMatches.length > 0 ? <MatchList matches={sportMatches} /> : <p class="text-muted text-center" style="padding:3rem 0;">No hay partidos disponibles ahora.</p>}
+    <FaqBlock items={faqItems} />
+  </div>
+</Base>

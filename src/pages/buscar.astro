@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+import { fetchMatches } from '../lib/data';
+
+const matches = await fetchMatches();
+---
+<Base title="Buscar Partidos en Vivo — 1RojaDirecta" description="Busca cualquier partido, equipo o liga en vivo. 1RojaDirecta." canonical="https://1rojadirecta.top/buscar/">
+  <div class="container section">
+    <h1>Buscar Partidos</h1>
+
+    <div class="search-bar-wrap" style="margin: 1.5rem 0;">
+      <span class="search-icon">🔍</span>
+      <input
+        type="search"
+        id="search-input"
+        class="search-input"
+        placeholder="Buscar equipo, liga o partido..."
+        autocomplete="off"
+        autofocus
+        aria-label="Buscar partidos en vivo"
+      />
+    </div>
+
+    <div id="search-results" class="match-grid">
+      {matches.map(m => (
+        <article
+          class="match-card"
+          data-teams={`${m.team1} ${m.team2}`.toLowerCase()}
+          data-league={m.leagueLabel.toLowerCase()}
+        >
+          <div class="match-card__league">{m.leagueLabel}</div>
+          <div class="match-card__teams">{m.team1} <span class="text-muted">vs</span> {m.team2}</div>
+          <div class="match-card__time">{m.time} UTC</div>
+          <a href={`/partido/${m.slug}/`} class="match-card__cta" id={`search-${m.slug}`}>▶ Ver En Vivo</a>
+        </article>
+      ))}
+    </div>
+
+    <p id="no-results" style="display:none; text-align:center; color:var(--text-muted); padding:2rem 0;">
+      No se encontraron partidos. Prueba con otro término.
+    </p>
+  </div>
+</Base>
+
+<script is:inline>
+  const input = document.getElementById('search-input');
+  const results = document.getElementById('search-results');
+  const noResults = document.getElementById('no-results');
+  const cards = Array.from(results?.querySelectorAll('.match-card') ?? []);
+
+  function filter(query) {
+    const q = query.toLowerCase().trim();
+    let visible = 0;
+    cards.forEach(card => {
+      const teams = card.dataset.teams ?? '';
+      const league = card.dataset.league ?? '';
+      const show = !q || teams.includes(q) || league.includes(q);
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    if (noResults) noResults.style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  input?.addEventListener('input', e => filter(e.target.value));
+</script>

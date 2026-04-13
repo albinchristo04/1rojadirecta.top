@@ -1,0 +1,102 @@
+---
+import Base from '../../layouts/Base.astro';
+import Player from '../../components/Player.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import FaqBlock from '../../components/FaqBlock.astro';
+import TimezoneRow from '../../components/TimezoneRow.astro';
+import { fetchMatches } from '../../lib/data';
+import {
+  matchTitle, matchMeta,
+  sportsEventSchema, matchFaqSchema, videoObjectSchema, breadcrumbSchema, jsonLd
+} from '../../lib/seo';
+import { matchFaqText } from '../../lib/faq';
+import { SITE_URL } from '../../lib/config';
+
+export async function getStaticPaths() {
+  const { fetchMatches: fm } = await import('../../lib/data');
+  const matches = await fm();
+  return matches.map(m => ({
+    params: { slug: m.slug },
+    props: { match: m, allMatches: matches },
+  }));
+}
+
+const { match, allMatches } = Astro.props;
+
+const title = matchTitle(match);
+const description = matchMeta(match);
+const canonical = `${SITE_URL}/partido/${match.slug}/`;
+
+const sportLabel = match.sport === 'futbol' ? 'Fútbol' : match.sport === 'mlb' ? 'MLB' : match.sport.toUpperCase();
+const sportHref = match.sport === 'futbol' ? '/futbol/' : `/${match.sport}/`;
+
+const breadcrumbs = [
+  { name: 'Inicio', href: '/' },
+  { name: sportLabel, href: sportHref },
+  { name: match.leagueLabel, href: `/${match.leagueSlug}/` },
+  { name: `${match.team1} vs ${match.team2}`, href: canonical },
+];
+
+const schema = [
+  sportsEventSchema(match),
+  matchFaqSchema(match),
+  videoObjectSchema(match),
+  breadcrumbSchema(breadcrumbs),
+];
+
+const faqItems = matchFaqText(match);
+
+// Related matches: same sport, excluding this one, max 5
+const related = allMatches
+  .filter(m => m.sport === match.sport && m.slug !== match.slug)
+  .slice(0, 5);
+---
+<Base title={title} description={description} canonical={canonical} schema={schema}>
+  <div class="container">
+    <Breadcrumb items={breadcrumbs} />
+
+    <!-- Match Header -->
+    <div style="padding: 1rem 0 0.5rem;">
+      <span class="badge badge--live" style="margin-bottom:0.5rem; display:inline-block;">
+        <span class="live-dot" aria-hidden="true"></span>
+        En Vivo
+      </span>
+      <h1>{match.team1} vs {match.team2} en Vivo</h1>
+      <p style="color:var(--text-secondary); font-size:0.88rem; margin-top:0.3rem;">
+        {match.leagueLabel} · {match.date.split('-').reverse().join('/')} · {match.time} UTC
+      </p>
+    </div>
+
+    <!-- Timezone Row -->
+    <TimezoneRow utcTime={match.time} />
+
+    <!-- Player -->
+    <Player match={match} />
+
+    <!-- Internal links to brand pages -->
+    <p class="seo-text">
+      También disponible en <a href="/tarjeta-roja/" style="color:var(--accent-text);">Tarjeta Roja TV</a> ·
+      <a href="/pirlo-tv/" style="color:var(--accent-text);">Pirlo TV</a> ·
+      <a href="/roja-directa-pirlo-tv/" style="color:var(--accent-text);">Roja Directa Pirlo TV</a>
+    </p>
+
+    <!-- FAQ -->
+    <FaqBlock items={faqItems} />
+
+    <!-- Related Matches -->
+    {related.length > 0 && (
+      <div class="more-matches">
+        <div class="more-matches__title">Más Partidos Hoy — {sportLabel}</div>
+        <div class="more-matches__list">
+          {related.map(m => (
+            <a href={`/partido/${m.slug}/`} class="more-matches__item" id={`related-${m.slug}`}>
+              <span class="more-matches__item-time">{m.time} UTC</span>
+              <span class="more-matches__item-teams">{m.team1} vs {m.team2}</span>
+              <span class="text-muted" style="font-size:0.72rem; margin-left:auto;">{m.leagueLabel}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</Base>

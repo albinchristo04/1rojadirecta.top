@@ -1,0 +1,110 @@
+---
+import type { Match } from '../lib/types';
+import { PLAYER_BASE_URL, LANG_LABELS, SERVER_COUNT } from '../lib/config';
+
+interface Props { match: Match; }
+const { match } = Astro.props;
+
+const servers = Array.from({ length: SERVER_COUNT }, (_, i) => i + 1);
+const langs = [...new Map(match.channels.map(c => [c.lang, c])).values()];
+const defaultChannel = match.channels[0];
+---
+<section class="player-section" aria-label="Reproductor de video">
+  <!-- Answer Box (featured snippet target) -->
+  <div class="answer-box" itemscope itemtype="https://schema.org/FAQPage">
+    <div itemprop="mainEntity" itemscope itemtype="https://schema.org/Question">
+      <h2 itemprop="name">¿Dónde ver {match.team1} vs {match.team2} en vivo?</h2>
+      <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+        <p itemprop="text">
+          Ver <strong>{match.team1} vs {match.team2}</strong> en vivo gratis en 1rojadirecta.top.
+          El partido comienza a las <strong>{match.time} UTC</strong>.
+          Disponible en {match.channels.length} canales sin registro.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Player Wrapper -->
+  <div class="player-wrapper" id="player-container">
+    <iframe
+      id="main-player"
+      src={`${PLAYER_BASE_URL}/1/${defaultChannel?.id ?? '1'}`}
+      allowfullscreen
+      loading="lazy"
+      title={`${match.team1} vs ${match.team2} en vivo`}
+    ></iframe>
+  </div>
+
+  <!-- Channel Selector -->
+  <div class="tabs" aria-label="Selector de idioma">
+    <div class="tabs__label">Idioma / Canal</div>
+    <div class="tabs__row" id="lang-tabs">
+      {langs.map((ch, i) => (
+        <button
+          class={`tab-btn${i === 0 ? ' active' : ''}`}
+          id={`lang-btn-${ch.lang}`}
+          data-channel={ch.id}
+          onclick="selectChannel(this)"
+          aria-pressed={i === 0 ? 'true' : 'false'}
+        >
+          {LANG_LABELS[ch.lang] ?? ch.lang.toUpperCase()} · CH {ch.id}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <!-- Server Selector -->
+  <div class="tabs" aria-label="Selector de servidor">
+    <div class="tabs__label">Servidor</div>
+    <div class="tabs__row" id="server-tabs">
+      {servers.map(s => (
+        <button
+          class={`tab-btn${s === 1 ? ' active' : ''}`}
+          id={`server-btn-${s}`}
+          data-server={s}
+          onclick="selectServer(this)"
+          aria-pressed={s === 1 ? 'true' : 'false'}
+        >
+          Servidor {s}
+        </button>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  let currentChannel = '{defaultChannelId}';
+  let currentServer = 1;
+
+  // Replace placeholder at runtime
+  currentChannel = document.getElementById('lang-tabs')?.querySelector('.tab-btn')?.dataset?.channel ?? '1';
+
+  function updatePlayer() {
+    const iframe = document.getElementById('main-player');
+    if (iframe) {
+      iframe.src = `https://bolaloca.my/player/${currentServer}/${currentChannel}`;
+    }
+  }
+
+  function selectChannel(btn) {
+    document.querySelectorAll('#lang-tabs .tab-btn').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed', 'false');
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-pressed', 'true');
+    currentChannel = btn.dataset.channel;
+    updatePlayer();
+  }
+
+  function selectServer(btn) {
+    document.querySelectorAll('#server-tabs .tab-btn').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed', 'false');
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-pressed', 'true');
+    currentServer = parseInt(btn.dataset.server, 10);
+    updatePlayer();
+  }
+</script>

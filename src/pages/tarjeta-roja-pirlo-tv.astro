@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import MatchList from '../components/MatchList.astro';
+import FaqBlock from '../components/FaqBlock.astro';
+import { fetchMatches } from '../lib/data';
+import { hubFaqSchema } from '../lib/seo';
+import { brandFaqText } from '../lib/faq';
+
+const matches = await fetchMatches();
+const brand = 'Tarjeta Roja Pirlo TV';
+const title = `Tarjeta Roja Pirlo TV En Vivo - Partidos Gratis | 1RojaDirecta`;
+const description = `Tarjeta Roja Pirlo TV en vivo gratis. ${matches.length} partidos disponibles hoy sin registro.`;
+const faqItems = brandFaqText(brand, matches.length);
+---
+<Base title={title} description={description} schema={[hubFaqSchema(brand, matches)]}>
+  <div class="container section">
+    <span class="badge badge--live">Tarjeta Roja · Pirlo TV</span>
+    <h1 style="margin-top:0.5rem;">Tarjeta Roja Pirlo TV — Ver Partidos en Vivo Gratis</h1>
+    <p class="seo-text" style="margin-top:0.5rem;">
+      <strong>Tarjeta Roja Pirlo TV</strong> — retransmisiones deportivas en vivo.
+      Fútbol, MLB, NBA, NHL gratis. <strong>{matches.length} partidos hoy</strong>.
+      También conocido como <em>tarjeta roja pirlo</em>, <em>pirlo tarjeta roja</em>.
+    </p>
+    <MatchList matches={matches} />
+    <FaqBlock items={faqItems} />
+  </div>
+</Base>

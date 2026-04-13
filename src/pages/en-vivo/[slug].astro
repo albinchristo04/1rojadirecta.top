@@ -1,0 +1,35 @@
+---
+// /en-vivo/[slug]/ — canonical redirect to /partido/[slug]/
+// Targets "X en vivo" search cluster
+import Base from '../../layouts/Base.astro';
+import { SITE_URL } from '../../lib/config';
+
+export async function getStaticPaths() {
+  const { fetchMatches } = await import('../../lib/data');
+  const matches = await fetchMatches();
+  return matches.map(m => ({
+    params: { slug: m.slug },
+    props: { match: m },
+  }));
+}
+
+const { match } = Astro.props;
+const canonical = `${SITE_URL}/partido/${match.slug}/`;
+---
+<Base
+  title={`${match.team1} vs ${match.team2} En Vivo — ${match.leagueLabel} | 1RojaDirecta`}
+  description={`${match.team1} vs ${match.team2} en vivo. ${match.leagueLabel} — ${match.time} UTC. Ver gratis sin registro.`}
+  canonical={canonical}
+>
+  <div class="container section" style="text-align:center; padding: 4rem 1rem;">
+    <p style="font-size:1.5rem;">📡</p>
+    <h1 style="font-size:1.2rem;">{match.team1} vs {match.team2} En Vivo</h1>
+    <a href={`/partido/${match.slug}/`} class="match-card__cta" style="display:inline-flex; margin-top:1rem;" id={`envivo-redirect-${match.slug}`}>
+      ▶ Ver Partido Ahora
+    </a>
+  </div>
+</Base>
+
+<script define:vars={{ dest: `/partido/${match.slug}/` }}>
+  if (typeof window !== 'undefined') window.location.replace(dest);
+</script>

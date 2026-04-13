@@ -1,0 +1,45 @@
+---
+import type { Match } from '../lib/types';
+import { LANG_LABELS } from '../lib/config';
+
+interface Props { match: Match; }
+const { match } = Astro.props;
+
+const [dd, mm, yyyy] = match.date.split('-');
+const dateLabel = `${dd}/${mm}/${yyyy}`;
+const langs = [...new Set(match.channels.map(c => c.lang))];
+---
+<article class="match-card" itemscope itemtype="https://schema.org/SportsEvent">
+  <div class="match-card__league">
+    <span class="live-dot" aria-hidden="true"></span>
+    {match.leagueLabel}
+  </div>
+
+  <div class="match-card__teams" itemprop="name">
+    {match.team1} <span class="text-muted">vs</span> {match.team2}
+  </div>
+
+  <div class="match-card__time">
+    {match.time} UTC · {dateLabel}
+  </div>
+
+  <div class="match-card__channels">
+    {langs.map(lang => (
+      <span class="lang-badge" title={LANG_LABELS[lang] ?? lang}>
+        {lang.toUpperCase()}
+      </span>
+    ))}
+    <span class="lang-badge" style="border-color: var(--accent); color: var(--accent-text);">
+      {match.channels.length} CH
+    </span>
+  </div>
+
+  <a
+    href={`/partido/${match.slug}/`}
+    class="match-card__cta"
+    id={`card-${match.slug}`}
+    aria-label={`Ver ${match.team1} vs ${match.team2} en vivo`}
+  >
+    ▶ Ver En Vivo
+  </a>
+</article>
