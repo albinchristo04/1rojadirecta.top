@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import MatchList from '../components/MatchList.astro';
 import { fetchMatches } from '../lib/data';
 import { homeTitle, homeMeta, itemListSchema, jsonLd } from '../lib/seo';
+import { COMPETITION_HUBS } from '../lib/config';
 
 const matches = await fetchMatches();
 const today = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -23,7 +24,7 @@ const buildTime = new Date().toISOString();
       </div>
       <h1 class="hero__title">Partidos en Vivo Hoy — {todayCapitalized}</h1>
       <p class="hero__subtitle">
-        Ver deportes en vivo gratis. Sin registro, sin pago. Múltiples canales y servidores.
+        Ver deportes en vivo gratis. Sin registro, sin pago. Múltiples canales disponibles.
       </p>
       <div class="hero__brands">
         <a href="/tarjeta-roja/" class="brand-pill" id="hero-tarjeta-roja">Tarjeta Roja TV</a>
@@ -33,6 +34,21 @@ const buildTime = new Date().toISOString();
       <p class="hero__meta">Actualizado: {buildTime.replace('T', ' ').slice(0, 16)} UTC · Recarga automática cada 3h</p>
     </div>
   </section>
+
+  <div class="container section" style="padding-top:1.25rem; padding-bottom:0.5rem;">
+    <div style="margin-bottom:1rem;">
+      <span class="badge badge--sport">Ligas en Español</span>
+      <h2 style="margin-top:0.5rem;">Competiciones Prioritarias Para Latinoamérica</h2>
+      <p class="seo-text" style="margin-top:0.5rem;">
+        Accesos directos a páginas creadas en español para búsquedas de Bing sobre Liga MX, Libertadores, Sudamericana, fútbol argentino, colombiano, peruano, ecuatoriano y más.
+      </p>
+      <div class="hero__brands" style="justify-content:flex-start; margin-top:0.85rem;">
+        {COMPETITION_HUBS.map(hub => (
+          <a href={`/${hub.slug}/`} class="brand-pill" id={`home-hub-${hub.slug}`}>{hub.label}</a>
+        ))}
+      </div>
+    </div>
+  </div>
 
   <!-- Match Listings -->
   <div class="container section">

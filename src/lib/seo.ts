@@ -146,7 +146,7 @@ export function matchFaqSchema(m: Match): object {
         name: `¿En qué canal se transmite ${m.team1} vs ${m.team2}?`,
         acceptedAnswer: {
           '@type': 'Answer',
-          text: `El partido se transmite en ${m.channels.length} canales. Ver gratis con 4 servidores en 1RojaDirecta sin registro.`,
+          text: `El partido se transmite en ${m.channels.length} canales. Puedes cambiar entre las fuentes disponibles directamente desde la página del partido.`,
         },
       },
     ],
@@ -162,7 +162,7 @@ export function videoObjectSchema(m: Match): object {
     thumbnailUrl: `${SITE_URL}/og-default.png`,
     uploadDate: m.utcDatetime.split('T')[0],
     contentUrl: `${SITE_URL}/partido/${m.slug}/`,
-    embedUrl: `https://bolaloca.my/player/1/${m.channels[0]?.id ?? '1'}`,
+    embedUrl: m.channels[0]?.stableUrl ?? m.channels[0]?.embedUrl ?? `${SITE_URL}/partido/${m.slug}/`,
   };
 }
 

@@ -1,12 +1,11 @@
 ---
 import type { Match } from '../lib/types';
-import { PLAYER_BASE_URL, LANG_LABELS, SERVER_COUNT } from '../lib/config';
+import { LANG_LABELS } from '../lib/config';
 
 interface Props { match: Match; }
 const { match } = Astro.props;
 
-const servers = Array.from({ length: SERVER_COUNT }, (_, i) => i + 1);
-const langs = [...new Map(match.channels.map(c => [c.lang, c])).values()];
+const langs = [...new Map(match.channels.map(c => [c.label || c.lang, c])).values()];
 const defaultChannel = match.channels[0];
 ---
 <section class="player-section" aria-label="Reproductor de video">
@@ -28,7 +27,7 @@ const defaultChannel = match.channels[0];
   <div class="player-wrapper" id="player-container">
     <iframe
       id="main-player"
-      src={`${PLAYER_BASE_URL}/1/${defaultChannel?.id ?? '1'}`}
+      src={defaultChannel?.stableUrl ?? defaultChannel?.embedUrl ?? ''}
       allowfullscreen
       loading="lazy"
       title={`${match.team1} vs ${match.team2} en vivo`}
@@ -43,30 +42,12 @@ const defaultChannel = match.channels[0];
       {langs.map((ch, i) => (
         <button
           class={`tab-btn${i === 0 ? ' active' : ''}`}
-          id={`lang-btn-${ch.lang}`}
-          data-channel={ch.id}
+          id={`lang-btn-${ch.id}`}
+          data-channel-url={ch.stableUrl ?? ch.embedUrl}
           onclick="selectChannel(this)"
           aria-pressed={i === 0 ? 'true' : 'false'}
         >
-          {LANG_LABELS[ch.lang] ?? ch.lang.toUpperCase()} · CH {ch.id}
-        </button>
-      ))}
-    </div>
-  </div>
-
-  <!-- Server Selector -->
-  <div class="tabs" aria-label="Selector de servidor">
-    <div class="tabs__label">Servidor</div>
-    <div class="tabs__row" id="server-tabs">
-      {servers.map(s => (
-        <button
-          class={`tab-btn${s === 1 ? ' active' : ''}`}
-          id={`server-btn-${s}`}
-          data-server={s}
-          onclick="selectServer(this)"
-          aria-pressed={s === 1 ? 'true' : 'false'}
-        >
-          Servidor {s}
+          {LANG_LABELS[ch.lang] ?? ch.label} · CH {ch.id}
         </button>
       ))}
     </div>
@@ -74,16 +55,12 @@ const defaultChannel = match.channels[0];
 </section>
 
 <script is:inline>
-  let currentChannel = '{defaultChannelId}';
-  let currentServer = 1;
-
-  // Replace placeholder at runtime
-  currentChannel = document.getElementById('lang-tabs')?.querySelector('.tab-btn')?.dataset?.channel ?? '1';
+  let currentChannelUrl = document.getElementById('lang-tabs')?.querySelector('.tab-btn')?.dataset?.channelUrl ?? '';
 
   function updatePlayer() {
     const iframe = document.getElementById('main-player');
-    if (iframe) {
-      iframe.src = `https://bolaloca.my/player/${currentServer}/${currentChannel}`;
+    if (iframe && currentChannelUrl) {
+      iframe.src = currentChannelUrl;
     }
   }
 
@@ -94,18 +71,7 @@ const defaultChannel = match.channels[0];
     });
     btn.classList.add('active');
     btn.setAttribute('aria-pressed', 'true');
-    currentChannel = btn.dataset.channel;
-    updatePlayer();
-  }
-
-  function selectServer(btn) {
-    document.querySelectorAll('#server-tabs .tab-btn').forEach(b => {
-      b.classList.remove('active');
-      b.setAttribute('aria-pressed', 'false');
-    });
-    btn.classList.add('active');
-    btn.setAttribute('aria-pressed', 'true');
-    currentServer = parseInt(btn.dataset.server, 10);
+    currentChannelUrl = btn.dataset.channelUrl;
     updatePlayer();
   }
 </script>

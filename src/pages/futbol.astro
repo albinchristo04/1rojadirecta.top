@@ -5,6 +5,7 @@ import FaqBlock from '../components/FaqBlock.astro';
 import { fetchMatches, getMatchesForSport } from '../lib/data';
 import { sportTitle, sportMeta, hubFaqSchema, itemListSchema } from '../lib/seo';
 import { hubFaqText } from '../lib/faq';
+import { COMPETITION_HUBS } from '../lib/config';
 
 const matches = await fetchMatches();
 const sport = 'futbol';
@@ -25,10 +26,15 @@ const faqItems = hubFaqText(label, sportMatches);
         Ver fútbol en vivo gratis hoy. La Liga, Champions League, Liga MX, Copa Libertadores y más.
         Hoy hay <strong>{sportMatches.length} partidos</strong> en directo. Múltiples canales sin registro.
       </p>
+      <div class="hero__brands" style="justify-content:flex-start; margin-top:0.85rem;">
+        {COMPETITION_HUBS.map(hub => (
+          <a href={`/${hub.slug}/`} class="brand-pill" id={`futbol-hub-${hub.slug}`}>{hub.label}</a>
+        ))}
+      </div>
     </div>
 
     {sportMatches.length > 0
-      ? <MatchList matches={sportMatches} />
+      ? <MatchList matches={sportMatches} groupByLeague={false} />
       : <p class="text-muted text-center" style="padding:3rem 0;">No hay partidos de fútbol disponibles ahora. Vuelve pronto.</p>
     }
 

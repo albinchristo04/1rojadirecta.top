@@ -13,7 +13,7 @@ export function matchFaqText(m: Match): { q: string; a: string }[] {
     },
     {
       q: `¿En qué canal se transmite ${m.team1} vs ${m.team2}?`,
-      a: `El partido se transmite en ${m.channels.length} canales disponibles. Ver gratis con 4 servidores en 1RojaDirecta sin necesidad de registro.`,
+      a: `El partido se transmite en ${m.channels.length} canales disponibles. Puedes cambiar entre las fuentes activas directamente desde esta página sin necesidad de registro.`,
     },
   ];
 }
@@ -32,7 +32,7 @@ export function hubFaqText(label: string, matches: Match[]): { q: string; a: str
     },
     {
       q: `¿Cómo ver ${label} sin cable gratis?`,
-      a: `Entra en 1rojadirecta.top, busca ${label} en el menú y haz clic en cualquier partido. Elige un canal y servidor. Sin registro, sin descargas, sin pago.`,
+      a: `Entra en 1rojadirecta.top, busca ${label} en el menú y haz clic en cualquier partido. Elige un canal disponible. Sin registro, sin descargas, sin pago.`,
     },
     {
       q: `¿Es legal ver ${label} gratis en internet?`,
@@ -50,7 +50,7 @@ export function brandFaqText(brand: string, matchCount: number): { q: string; a:
     },
     {
       q: `¿Cómo funciona ${brand}?`,
-      a: `Entra en 1rojadirecta.top, busca el partido que quieres ver y selecciona un canal. ${brand} ofrece ${matchCount} partidos disponibles hoy con múltiples servidores.`,
+      a: `Entra en 1rojadirecta.top, busca el partido que quieres ver y selecciona un canal. ${brand} ofrece ${matchCount} partidos disponibles hoy con múltiples fuentes activas.`,
     },
     {
       q: `¿Cuál es la diferencia entre Tarjeta Roja TV y Pirlo TV?`,

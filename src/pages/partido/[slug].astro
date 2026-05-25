@@ -33,7 +33,6 @@ const sportHref = match.sport === 'futbol' ? '/futbol/' : `/${match.sport}/`;
 const breadcrumbs = [
   { name: 'Inicio', href: '/' },
   { name: sportLabel, href: sportHref },
-  { name: match.leagueLabel, href: `/${match.leagueSlug}/` },
   { name: `${match.team1} vs ${match.team2}`, href: canonical },
 ];
 

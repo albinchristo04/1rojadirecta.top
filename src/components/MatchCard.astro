@@ -7,7 +7,7 @@ const { match } = Astro.props;
 
 const [dd, mm, yyyy] = match.date.split('-');
 const dateLabel = `${dd}/${mm}/${yyyy}`;
-const langs = [...new Set(match.channels.map(c => c.lang))];
+const langs = [...new Set(match.channels.map(c => c.label || c.lang.toUpperCase()))];
 ---
 <article class="match-card" itemscope itemtype="https://schema.org/SportsEvent">
   <div class="match-card__league">
@@ -26,7 +26,7 @@ const langs = [...new Set(match.channels.map(c => c.lang))];
   <div class="match-card__channels">
     {langs.map(lang => (
       <span class="lang-badge" title={LANG_LABELS[lang] ?? lang}>
-        {lang.toUpperCase()}
+        {lang}
       </span>
     ))}
     <span class="lang-badge" style="border-color: var(--accent); color: var(--accent-text);">

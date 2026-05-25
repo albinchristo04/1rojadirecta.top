@@ -1,7 +1,6 @@
 ---
 import type { Match } from '../lib/types';
 import MatchCard from './MatchCard.astro';
-import { SPORT_LABELS } from '../lib/config';
 
 interface Props {
   matches: Match[];
@@ -23,14 +22,23 @@ if (groupByLeague) {
 } else {
   groups['all'] = { label: 'Todos', sport: 'all', matches };
 }
+
+function groupHref(key: string, sport: string): string | null {
+  if (key === 'all' || sport === 'all') return null;
+  if (sport === 'futbol' && key === 'futbol') return '/futbol/';
+  if (sport === 'mlb' || sport === 'beisbol' || sport === 'nba' || sport === 'nhl' || sport === 'motogp') {
+    return `/${sport}/`;
+  }
+  return `/${key}/`;
+}
 ---
 {Object.entries(groups).map(([key, group]) => (
   <section class="league-group">
     <div class="league-group__header">
       <h2 class="league-group__title" id={`league-${key}`}>
-        <a href={`/${group.sport === 'futbol' ? '' : ''}${group.sport === 'mlb' || group.sport === 'nba' || group.sport === 'nhl' || group.sport === 'motogp' ? `${group.sport}/` : `/${key}/`}`} style="color:inherit">
-          {group.label}
-        </a>
+        {groupHref(key, group.sport)
+          ? <a href={groupHref(key, group.sport) ?? undefined} style="color:inherit">{group.label}</a>
+          : <span>{group.label}</span>}
       </h2>
       <span class="league-group__count">{group.matches.length} partido{group.matches.length !== 1 ? 's' : ''}</span>
     </div>

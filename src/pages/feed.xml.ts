@@ -1,10 +1,10 @@
 import type { APIRoute } from 'astro';
-import { fetchMatches } from '../lib/data';
+import { fetchMatchFeed } from '../lib/data';
 import { SITE_URL, SITE_NAME } from '../lib/config';
 
 export const GET: APIRoute = async () => {
-  const matches = await fetchMatches();
-  const now = new Date().toUTCString();
+  const { matches, generatedAt } = await fetchMatchFeed();
+  const now = generatedAt ? new Date(generatedAt).toUTCString() : new Date().toUTCString();
 
   const items = matches.slice(0, 50).map(m => `  <item>
     <title><![CDATA[${m.team1} vs ${m.team2} en Vivo — ${m.leagueLabel}]]></title>

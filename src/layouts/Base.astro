@@ -8,6 +8,7 @@ import { websiteSchema, organizationSchema, jsonLd } from '../lib/seo';
 interface Props {
   title: string;
   description?: string;
+  keywords?: string;
   canonical?: string;
   ogTitle?: string;
   ogDescription?: string;
@@ -18,6 +19,7 @@ interface Props {
 const {
   title,
   description = SITE_DESCRIPTION,
+  keywords = 'roja directa, tarjeta roja tv, pirlo tv, futbol en vivo, ver futbol gratis, liga mx en vivo, copa libertadores en vivo, futbol argentino en vivo, futbol colombiano en vivo, mlb en vivo, nba en vivo, nhl en vivo, deportes en vivo',
   canonical,
   ogTitle,
   ogDescription,
@@ -41,7 +43,7 @@ const allSchema = [websiteSchema(), organizationSchema(), ...schema];
   <!-- Primary SEO -->
   <title>{title}</title>
   <meta name="description" content={description} />
-  <meta name="keywords" content="roja directa, tarjeta roja tv, pirlo tv, futbol en vivo, ver futbol gratis, mlb en vivo, nba en vivo, nhl en vivo, deportes en vivo" />
+  <meta name="keywords" content={keywords} />
   <link rel="canonical" href={canonicalUrl} />
   {noindex && <meta name="robots" content="noindex, nofollow" />}
   {!noindex && <meta name="robots" content="index, follow, max-image-preview:large" />}

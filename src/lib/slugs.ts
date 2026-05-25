@@ -22,12 +22,17 @@ export function matchSlug(team1: string, team2: string): string {
 
 /** Parse "Team1 - Team2" string (the JSON format uses " - " as separator) */
 export function parseTeams(teams: string): [string, string] {
-  const idx = teams.indexOf(' - ');
-  if (idx === -1) {
-    // fallback: split on " vs " or just return as-is
-    const vsIdx = teams.indexOf(' vs ');
-    if (vsIdx === -1) return [teams, ''];
-    return [teams.slice(0, vsIdx).trim(), teams.slice(vsIdx + 4).trim()];
+  const separators = [' - ', ' x ', ' vs ', ' v '];
+
+  for (const separator of separators) {
+    const idx = teams.indexOf(separator);
+    if (idx !== -1) {
+      return [
+        teams.slice(0, idx).trim(),
+        teams.slice(idx + separator.length).trim(),
+      ];
+    }
   }
-  return [teams.slice(0, idx).trim(), teams.slice(idx + 3).trim()];
+
+  return [teams, ''];
 }

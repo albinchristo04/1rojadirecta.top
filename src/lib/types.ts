@@ -1,31 +1,35 @@
 // ─── Raw JSON types ────────────────────────────────────────────────────────────
 export interface RawChannel {
-  id: string;
-  lang: string;
+  label: string;
+  embed_url: string;
+  stable_url?: string;
+  available?: boolean;
 }
 
-export interface RawEvent {
-  date: string;         // "DD-MM-YYYY"
-  time: string;         // "HH:MM"
-  datetime: string;     // "DD-MM-YYYY HH:MM"
-  league: string;
-  teams: string;        // "Team1 - Team2"
+export interface RawMatch {
+  day: string;
+  index: number;
+  title: string;
+  time: string;
+  embed_url: string;
+  streams_available: number;
   channels: RawChannel[];
-  raw_line: string;
 }
 
 export interface RawData {
-  extractor: string;
-  website: string;
-  last_updated: string;
-  total_events: number;
-  events: RawEvent[];
+  generated: string;
+  total: number;
+  matches: RawMatch[];
 }
 
 // ─── Normalized types ─────────────────────────────────────────────────────────
 export interface Channel {
   id: string;
   lang: string;
+  label: string;
+  embedUrl: string;
+  stableUrl?: string;
+  available: boolean;
 }
 
 export interface Match {
